@@ -1,56 +1,86 @@
-import {Request, Response} from 'express'
-import TeamService from './teamservice'
+import Team from "./teammodel";
+import { TeamType} from "./types/teamTypes";
+import {writeFile, readFile} from 'fs/promises'
 
-class TeamController {
 
-    public async create(req: Request, res: Response){
-        const Team = await TeamService.createTeam(req.body)
-        return res.status(200).json(Team)
+class TeamService {
+
+    async createTeam(data: TeamType) {
+
+        const pokemons = JSON.parse(await readFile('pokeData.json', "utf-8"))
+        
+        const result = await Team.create(data)
+
+        let geral = await this.list()
+
+        geral.forEach(equipe => {
+            equipe.team.map(pokeName => {
+                pokemons.forEach(pokemon => {
+                    if(pokeName.name == pokemon[0].name) {
+                            pokeName.name = JSON.stringify(pokemon[0])
+                    }
+                });
+            })
+        
+        });
+
+        writeFile('PokeTeam.json', JSON.stringify(geral, null, 2))
+        return geral
+        
+
+
     }
 
-    async list(req: Request, res: Response) {
-        const Teams = await TeamService.list()
+    async list() {
+        const listedTeams = await Team.find()
 
-        return res.status(200).json(Teams)
+        return listedTeams
     }
 
-    async find(req: Request, res: Response) {
-        const Team = await TeamService.find(req.params.id)
+    async find(id) {
+        const findedTeam = await Team.findById(id)
 
-        return res.status(200).json(Team)
+        return findedTeam
     }
 
-    async update(req: Request, res: Response) {
-        const Team = await TeamService.update(req.params.id, req.body)
+    async update(id, dataToUpdate: TeamType) {
+        const updatedTeam = await Team.findOneAndUpdate({_id: id}, {
+            trainerName: dataToUpdate.trainerName,
+            team: dataToUpdate.team
 
-        return res.status(200).json(Team)
+        }, {new: true})
+
+        return updatedTeam
     }
 
-    async delete(req: Request, res: Response) {
-        await TeamService.delete(req.params.id)
-
-        return res.status(200).json("Successfully deleted Team!")
+    async delete(id) {
+        await Team.findOneAndDelete({_id: id})
+        return
     }
 
-    async findTrainer(req: Request, res: Response) {
-        const Team = await TeamService.findTrainer(req.params.trainerName)
+    async findTrainer(trainerName) {
+        const findedTeam = await Team.find({trainerName: trainerName})
 
-        return res.status(200).json(Team)
+        return findedTeam
     }
 
-    async updateByTrainer(req: Request, res: Response) {
-        const Team = await TeamService.updateByTrainer(req.params.trainerName, req.body)
+    async updateByTrainer(trainerName, dataToUpdate: TeamType) {
+        const updatedTeam = await Team.findOneAndUpdate({trainerName: trainerName}, {
+            trainerName: dataToUpdate.trainerName,
+            team: dataToUpdate.team
 
-        return res.status(200).json(Team)
+        }, {new: true})
+
+        return updatedTeam
     }
 
-    async deleteByTrainer(req: Request, res: Response) {
-        await TeamService.deleteByTrainer(req.params.trainerName)
-
-        return res.status(200).json("Successfully deleted Team!")
+    async deleteByTrainer(trainerName) {
+        await Team.findOneAndDelete({trainerName: trainerName})
+        return
     }
+
+
 
 }
 
-
-export default new TeamController()
+export default new TeamService()
