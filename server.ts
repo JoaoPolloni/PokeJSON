@@ -1,18 +1,13 @@
 import app from "./app";
 
-
 function main() {
-
     try {
-        
-        app.listen(3000, 'localhost',async () => {
-            console.log("Starting server")
-        })
-
-    } catch (error) {
-        console.error('Starting server Error', error)        
+        app.listen(3001, "localhost", async () => {
+            console.log("Servidor Iniciado")
+        });
+    } catch (erro) {
+        console.error("Erro: "+erro);
     }
-
 }
 
 main()

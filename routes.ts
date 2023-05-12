@@ -1,23 +1,23 @@
-import {Router} from 'express'
-import controller from './PokeAPI/controller'
-import teamcontroller from './Poketeam/teamcontroller'
+import { Router } from "express";
+import PokemonController from "./src/pokemon.controller"
+import PokemonTeamControler from "./src/pokemonTeam.controller"
+
+const routes = Router();
+
+//routes.get("/getPokeApi", PokemonController.readPokeApi);
+//routes.get("/filterPokeApi", PokemonController.filterPokemons);
+//routes.get("/getPokemonsMongoDB", PokemonController.getPokemonsMongoDB);
 
 
-const routes = Router()
+routes.post("/writePokemonsJSON", PokemonController.writePokemonsJSONandSaveMongoDB);               // QUESTÃO 1
+routes.post("/writeTiposPokemonsJSON", PokemonController.writeTiposPokemonsJSON);                   // QUESTÃO 2
+routes.post("/createPokemonTeam", PokemonTeamControler.createPokemonTeamMongoDB);                   // QUESTÃO 3 A)
+routes.get("/getPokemonTeams", PokemonTeamControler.readPokemonTeamMongoDB);                        // QUESTÃO 3 B)
+routes.get("/getPokemonTeams/:trainerName", PokemonTeamControler.findPokemonTeamByNameMongoDB);     // QUESTÃO 3 C)
+routes.get("/getPokemonTeams/:trainerName", PokemonTeamControler.updatePokemonTeamByNameMongoDB);   // QUESTÃO 3 D)
+routes.get("/getPokemonTeams/:trainerName", PokemonTeamControler.deletePokemonTeamByNameMongoDB);   // QUESTÃO 3 E)
+routes.get("/findByType/:tipo", PokemonController.findPokemonsByTypeMongoDB);                       // QUESTÃO 4
+routes.get("/findByName/:nome", PokemonController.findPokemonsByNameMongoDB);                       // QUESTÃO 5
+routes.get("/findByDex/:dex", PokemonController.findPokemonsByDexMongoDB);                          // QUESTÃO 6
 
-// Pokemons //
-routes.get('/pokemonsURL', controller.Pokecreate)
-routes.post('/savepokemons', controller.SavePokeData)
-routes.get('/savetype', controller.savetype)
-routes.get('/pokemons', controller.list)
-routes.get('/pokemonsDex/:dex', controller.findDex)
-routes.get('/pokemonsType/:type', controller.findType)
-routes.get('/pokemonsMove/:move', controller.findMove)
-
-//  Team  //
-
-routes.post('/teamCreate', teamcontroller.create)
-routes.get('/teams', teamcontroller.list)
-routes.get('/trainerName/:trainerName', teamcontroller.findTrainer)
-routes.put('/trainerName/:trainerName', teamcontroller.updateByTrainer)
-routes.delete('/trainerName/:trainerName', teamcontroller.deleteByTrainer)
+export default routes;

@@ -1,50 +1,36 @@
-import express from "express";
-import cors from 'cors'
-import routes from "./routes";
-import mongoose, { mongo } from "mongoose";
-
+import express from 'express'
+import routes from './routes'
+import mongoose from 'mongoose'
 
 class App {
-
-    public express
-
+    
+    public express: express.Application
 
     public constructor() {
 
         this.express = express()
-        this.middlewares()
+        this.middleware()
         this.routes()
         this.database()
 
     }
 
-    private middlewares(): void {
+    public middleware(): void {
         this.express.use(express.json())
-        this.express.use(cors())
+    }
+
+    public routes(): void {
+        this.express.use(routes)
     }
 
     private async database() {
-
         try {
-            
             mongoose.set("strictQuery", true)
-
-            await mongoose.connect('mongodb://0.0.0.0:27017')
+            await mongoose.connect('mongodb://0.0.0.0:27017/esoft5s')
             console.log('Connect database success')
-
-        } catch (error) {
-            console.log("Connect database fail, error: ", error)
+        } catch (err) {
+            console.error('Connect database fail, error: ', err)
         }
-
     }
-
-    private routes (): void {
-
-        this.express.use(routes)
-
-    }
-
-
 }
-
 export default new App().express
